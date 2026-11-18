@@ -1,0 +1,17 @@
+{
+  "name": "seotda-online",
+  "version": "1.0.0",
+  "description": "세장섯다 — 화투로 하는 3장 섯다 온라인 (최대 5인)",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "node test/test.js && node test/online-test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "license": "MIT"
+}

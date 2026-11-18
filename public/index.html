@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>세장섯다 온라인</title>
+  <meta name="description" content="친구들과 온라인으로 즐기는 3장 섯다 (최대 5인)" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8E%B4%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="online">
+  <div class="conn-banner" id="connBanner"></div>
+  <div class="toast" id="toast"></div>
+
+  <!-- 입장 -->
+  <section id="entry" class="screen active">
+    <div class="setup-card">
+      <h1 class="logo">세장<span>섯다</span></h1>
+      <p class="sub">친구들과 온라인으로 · 최대 5인</p>
+      <div class="field">
+        <label for="nameInput">닉네임</label>
+        <input type="text" id="nameInput" maxlength="8" placeholder="8자 이내" autocomplete="nickname" />
+      </div>
+      <button class="btn primary big wide" id="createBtn">방 만들기</button>
+      <div class="or"><span>또는 받은 코드로 참가</span></div>
+      <div class="join-row">
+        <input type="text" id="codeInput" maxlength="4" placeholder="방 코드" autocomplete="off" />
+        <button class="btn big" id="joinBtn">참가</button>
+      </div>
+      <div class="entry-foot">
+        <a href="local.html">컴퓨터랑 혼자 연습하기 →</a>
+        <button class="linklike" data-open="rules">족보·규칙</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 대기실 -->
+  <section id="lobby" class="screen">
+    <div class="setup-card lobby-card">
+      <div class="lobby-head">
+        <div>
+          <div class="muted small">방 코드</div>
+          <div class="room-code" id="lobbyCode">----</div>
+        </div>
+        <button class="btn ghost" id="copyLinkBtn">초대 링크 복사</button>
+      </div>
+      <div class="seat-slots" id="seatSlots"></div>
+      <div id="hostPanel" class="host-panel">
+        <div class="row2">
+          <div class="field">
+            <label for="setChips">시작 칩</label>
+            <select id="setChips">
+              <option value="5000">5,000</option>
+              <option value="10000">10,000</option>
+              <option value="30000">30,000</option>
+              <option value="100000">100,000</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="setAnte">학교비</label>
+            <select id="setAnte">
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="300">300</option>
+              <option value="500">500</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="setTurn">제한 시간</label>
+            <select id="setTurn">
+              <option value="15">15초</option>
+              <option value="30">30초</option>
+              <option value="60">60초</option>
+            </select>
+          </div>
+        </div>
+        <div class="lobby-actions">
+          <button class="btn ghost" id="addBotBtn">+ 컴퓨터 추가</button>
+          <button class="btn primary big" id="startBtn">게임 시작</button>
+        </div>
+      </div>
+      <p class="hint" id="lobbyHint"></p>
+      <div class="chat-box lobby-chat">
+        <ol class="chat-list" id="lobbyChat"></ol>
+        <form class="chat-form" data-chat>
+          <input type="text" maxlength="120" placeholder="채팅" />
+          <button class="btn small">보내기</button>
+        </form>
+      </div>
+      <div class="lobby-foot">
+        <button class="linklike" data-open="rules">족보·규칙</button>
+        <button class="linklike" id="lobbyLeaveBtn">방 나가기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 게임 -->
+  <section id="table" class="screen">
+    <header class="topbar">
+      <div class="brand">세장<span>섯다</span></div>
+      <div class="hand-info" id="handInfo"></div>
+      <div class="top-actions">
+        <button class="btn small ghost" data-open="rules">족보</button>
+        <button class="btn small ghost" id="toggleLog">채팅<span class="dot" id="chatDot"></span></button>
+        <button class="btn small ghost" id="quitBtn">나가기</button>
+      </div>
+    </header>
+    <main class="board">
+      <div class="felt" id="felt">
+        <div class="center">
+          <div class="phase" id="phaseLabel"></div>
+          <div class="pot">
+            <div class="pot-label">판돈</div>
+            <div class="pot-amount" id="potAmount">0</div>
+          </div>
+          <div class="center-msg" id="centerMsg"></div>
+        </div>
+        <div id="seats"></div>
+      </div>
+      <aside class="log" id="logPanel">
+        <div class="tabs">
+          <button class="tab on" data-tab="chat">채팅</button>
+          <button class="tab" data-tab="log">진행 기록</button>
+        </div>
+        <ol class="chat-list" id="gameChat"></ol>
+        <ol id="logList" class="hidden"></ol>
+        <form class="chat-form" data-chat>
+          <input type="text" maxlength="120" placeholder="채팅" />
+          <button class="btn small">보내기</button>
+        </form>
+      </aside>
+    </main>
+    <footer class="controls" id="controls">
+      <div class="timer"><div class="timer-bar" id="timerBar"></div></div>
+      <div class="my-hand-label" id="myHandLabel"></div>
+      <div class="action-row" id="actionRow"></div>
+    </footer>
+  </section>
+
+  <!-- 결과 -->
+  <div class="overlay" id="resultModal">
+    <div class="modal result-box">
+      <h2 id="resultTitle"></h2>
+      <div id="resultNotes" class="result-notes"></div>
+      <div id="resultList" class="result-list"></div>
+      <div class="modal-actions">
+        <button class="btn primary big" id="resultBtn">확인</button>
+      </div>
+      <p class="hint center-text" id="resultCountdown"></p>
+    </div>
+  </div>
+
+  <!-- 게임 종료 -->
+  <div class="overlay" id="overModal">
+    <div class="modal result-box">
+      <h2>게임 종료</h2>
+      <div id="overList" class="result-list"></div>
+      <div class="modal-actions">
+        <button class="btn ghost" id="overLeaveBtn">나가기</button>
+        <button class="btn primary big" id="restartBtn">다시 하기</button>
+      </div>
+      <p class="hint center-text" id="overHint"></p>
+    </div>
+  </div>
+
+  <!-- 족보·규칙 -->
+  <div class="overlay" id="rules">
+    <div class="modal rules-box">
+      <button class="close" data-close="rules" aria-label="닫기">×</button>
+      <h2>족보 &amp; 규칙</h2>
+      <div class="rules-grid">
+        <div>
+          <h3>족보 (높은 순)</h3>
+          <table id="rankTable"></table>
+        </div>
+        <div>
+          <h3>특수패</h3>
+          <table id="specialTable"></table>
+          <h3>진행 순서</h3>
+          <ol class="flow">
+            <li>모두 학교비(기본 판돈)를 냅니다.</li>
+            <li>두 장씩 받고 <b>1차 베팅</b>.</li>
+            <li>세 번째 장을 받고, 세 장 중 <b>한 장을 버려</b> 두 장으로 족보를 정합니다.</li>
+            <li><b>2차 베팅</b> 후 남은 사람끼리 패를 공개해 높은 족보가 판돈을 가져갑니다.</li>
+            <li>이긴 사람이 다음 판의 선이 됩니다.</li>
+          </ol>
+          <h3>베팅</h3>
+          <ul class="flow">
+            <li><b>체크</b> — 아무도 안 걸었을 때 넘김</li>
+            <li><b>삥</b> — 첫 베팅을 학교비만큼</li>
+            <li><b>콜</b> — 앞사람만큼 맞춤</li>
+            <li><b>따당</b> — 앞사람 베팅의 두 배로 올림</li>
+            <li><b>하프</b> — 콜 후 판돈의 절반만큼 더 올림</li>
+            <li><b>다이</b> — 포기 (낸 돈은 판에 남음)</li>
+          </ul>
+          <p class="small-note">한 라운드에 1인당 레이즈는 2번까지. 제한 시간이 지나면 자동으로 체크(못 하면 다이)됩니다. 칩이 모자라면 올인하고 사이드팟으로 나뉩니다. 같은 족보는 판돈을 나눠 가집니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/cards-ui.js"></script>
+  <script src="js/online.js"></script>
+</body>
+</html>

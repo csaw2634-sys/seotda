@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>세장섯다 · 컴퓨터랑 연습</title>
+  <meta name="description" content="화투로 하는 한국 민속놀이 섯다 — 3장 받고 2장으로 승부하는 세장섯다 (최대 5인)" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8E%B4%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- 설정 화면 -->
+  <section id="setup" class="screen active">
+    <div class="setup-card">
+      <h1 class="logo">세장<span>섯다</span></h1>
+      <p class="sub">세 장 받고 두 장으로 승부 · 2~5인</p>
+
+      <div class="field">
+        <label for="playerCount">인원</label>
+        <div class="seg" id="playerCount" role="radiogroup"></div>
+      </div>
+
+      <div id="seatList" class="seat-list"></div>
+
+      <div class="row2">
+        <div class="field">
+          <label for="startChips">시작 칩</label>
+          <select id="startChips">
+            <option value="5000">5,000</option>
+            <option value="10000" selected>10,000</option>
+            <option value="30000">30,000</option>
+            <option value="100000">100,000</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="ante">학교비(기본 판돈)</label>
+          <select id="ante">
+            <option value="50">50</option>
+            <option value="100" selected>100</option>
+            <option value="300">300</option>
+            <option value="500">500</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="speed">컴퓨터 속도</label>
+          <select id="speed">
+            <option value="1100">느리게</option>
+            <option value="650" selected>보통</option>
+            <option value="250">빠르게</option>
+          </select>
+        </div>
+      </div>
+
+      <p class="hint" id="setupHint"></p>
+      <div class="setup-actions">
+        <div style="display:flex;gap:8px"><a class="btn ghost" href="index.html">← 온라인</a><button class="btn ghost" data-open="rules">족보·규칙</button></div>
+        <button class="btn primary big" id="startBtn">게임 시작</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 게임 화면 -->
+  <section id="table" class="screen">
+    <header class="topbar">
+      <div class="brand">세장<span>섯다</span></div>
+      <div class="hand-info" id="handInfo"></div>
+      <div class="top-actions">
+        <button class="btn small ghost" data-open="rules">족보</button>
+        <button class="btn small ghost" id="toggleLog">기록</button>
+        <button class="btn small ghost" id="quitBtn">나가기</button>
+      </div>
+    </header>
+
+    <main class="board">
+      <div class="felt" id="felt">
+        <div class="center">
+          <div class="phase" id="phaseLabel"></div>
+          <div class="pot">
+            <div class="pot-label">판돈</div>
+            <div class="pot-amount" id="potAmount">0</div>
+          </div>
+          <div class="center-msg" id="centerMsg"></div>
+        </div>
+        <div id="seats"></div>
+      </div>
+      <aside class="log" id="logPanel">
+        <h3>진행 기록</h3>
+        <ol id="logList"></ol>
+      </aside>
+    </main>
+
+    <footer class="controls" id="controls">
+      <div class="my-hand-label" id="myHandLabel"></div>
+      <div class="action-row" id="actionRow"></div>
+    </footer>
+  </section>
+
+  <!-- 패 가리기 (한 기기에서 여러 명이 할 때) -->
+  <div class="overlay" id="curtain">
+    <div class="modal curtain-box">
+      <div class="curtain-icon">🎴</div>
+      <h2 id="curtainTitle"></h2>
+      <p>다른 사람은 화면을 보지 마세요.</p>
+      <button class="btn primary big" id="curtainBtn">내 패 보기</button>
+    </div>
+  </div>
+
+  <!-- 결과 -->
+  <div class="overlay" id="resultModal">
+    <div class="modal result-box">
+      <h2 id="resultTitle"></h2>
+      <div id="resultNotes" class="result-notes"></div>
+      <div id="resultList" class="result-list"></div>
+      <div class="modal-actions">
+        <button class="btn primary big" id="resultBtn">다음 판</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 족보·규칙 -->
+  <div class="overlay" id="rules">
+    <div class="modal rules-box">
+      <button class="close" data-close="rules" aria-label="닫기">×</button>
+      <h2>족보 &amp; 규칙</h2>
+      <div class="rules-grid">
+        <div>
+          <h3>족보 (높은 순)</h3>
+          <table id="rankTable"></table>
+        </div>
+        <div>
+          <h3>특수패</h3>
+          <table id="specialTable"></table>
+          <h3>진행 순서</h3>
+          <ol class="flow">
+            <li>모두 학교비(기본 판돈)를 냅니다.</li>
+            <li>두 장씩 받고 <b>1차 베팅</b>.</li>
+            <li>세 번째 장을 받고, 세 장 중 <b>한 장을 버려</b> 두 장으로 족보를 정합니다.</li>
+            <li><b>2차 베팅</b> 후 남은 사람끼리 패를 공개해 높은 족보가 판돈을 가져갑니다.</li>
+            <li>이긴 사람이 다음 판의 선이 됩니다.</li>
+          </ol>
+          <h3>베팅</h3>
+          <ul class="flow">
+            <li><b>체크</b> — 아무도 안 걸었을 때 넘김</li>
+            <li><b>삥</b> — 첫 베팅을 학교비만큼</li>
+            <li><b>콜</b> — 앞사람만큼 맞춤</li>
+            <li><b>따당</b> — 앞사람 베팅의 두 배로 올림</li>
+            <li><b>하프</b> — 콜 후 판돈의 절반만큼 더 올림</li>
+            <li><b>다이</b> — 포기 (낸 돈은 판에 남음)</li>
+          </ul>
+          <p class="small-note">한 라운드에 1인당 레이즈는 2번까지. 칩이 모자라면 가진 만큼 올인하고, 넘치는 금액은 사이드팟으로 나뉩니다. 같은 족보는 판돈을 나눠 가집니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/core.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/cards-ui.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>
