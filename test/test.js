@@ -86,6 +86,16 @@ const opts = Core.pairOptions([C(1, 'gwang'), C(5, 'tti'), C(8, 'gwang')]);
 assert.strictEqual(opts.length, 3);
 assert.strictEqual(Core.bestOption([C(1, 'gwang'), C(5, 'tti'), C(8, 'gwang')]).hand.name, '18광땡');
 
+// 배분 고유성: 5인 × 3장 = 15장을 1만 번 돌려도 같은 카드·같은 월 3장이 없어야 함
+for (let t = 0; t < 10000; t++) {
+  const d = Core.shuffle(Core.makeDeck());
+  const dealt = d.slice(0, 15);
+  assert.strictEqual(new Set(dealt.map((c) => c.id)).size, 15, '같은 카드 중복');
+  const cnt = {};
+  dealt.forEach((c) => { cnt[c.month] = (cnt[c.month] || 0) + 1; });
+  assert(Object.values(cnt).every((v) => v <= 2), '같은 월 3장 이상');
+}
+
 console.log('단위 테스트 통과');
 
 // ── AI 끼리 시뮬레이션: 칩 총량 보존, 무한루프 없음
@@ -99,7 +109,11 @@ console.log('단위 테스트 통과');
       players: Array.from({ length: n }, (_, i) => ({ name: 'P' + i, isHuman: false })),
     }, {
       decide: async (p, ctx) => AI.decide(ctx),
-      discard: async (p, ctx) => AI.chooseKeep(ctx.cards, ctx).discard,
+      discard: async (p, ctx) => {
+        const all = game.alive().flatMap((x) => x.hand);
+        assert.strictEqual(new Set(all.map((c) => c.id)).size, all.length, '게임 중 패 중복');
+        return AI.chooseKeep(ctx.cards, ctx).discard;
+      },
       regame: async () => { regames++; },
     });
     const total = n * 3000;

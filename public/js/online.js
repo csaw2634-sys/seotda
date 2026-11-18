@@ -39,6 +39,7 @@
   let lastChatCount = 0;
   let chatOpen = false;
   let resultKey = null;
+  const dealt = {};
 
   function serverUrl() {
     if (window.SEOTDA_SERVER) return window.SEOTDA_SERVER;
@@ -285,7 +286,12 @@
 
       const big = p.isMe && k === 0;
       const cards = el('div', 'cards');
-      p.cards.forEach((c) => cards.appendChild(cardEl(c, { lg: big })));
+      // 새로 받은 카드만 돌리는 애니메이션
+      const handKey = g.handNo + ':' + g.regameCount;
+      const prev = dealt[p.id] && dealt[p.id].key === handKey ? dealt[p.id].n : 0;
+      const total = p.cards.length + (p.discarded ? 1 : 0);
+      p.cards.forEach((c, i) => cards.appendChild(cardEl(c, { lg: big, anim: i >= prev && total > prev })));
+      dealt[p.id] = { key: handKey, n: Math.max(prev, total) };
       if (p.discarded) cards.appendChild(cardEl(p.discarded, { dim: true, lg: big }));
       const hn = el('div', 'hand-name', p.handName || '');
       const plate = el('div', 'plate');

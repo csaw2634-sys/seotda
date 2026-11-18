@@ -26,6 +26,7 @@
   let humans = [];
   let speed = 650;
   let bottomId = 0;
+  const dealt = {};
 
   /* ── 설정 화면 */
   let playerCount = 4;
@@ -257,14 +258,17 @@
       const visible = canSee(p);
       const big = visible && k === 0 && humans.length > 0;
       const cards = el('div', 'cards');
+      const handKey = game.handNo + ':' + game.regameCount + ':' + (p.hand[0] ? p.hand[0].id : '');
+      const prev = dealt[p.id] && dealt[p.id].key === handKey ? dealt[p.id].n : 0;
       if (p.inHand && p.hand.length) {
         if (p.kept) {
           p.kept.forEach((c) => cards.appendChild(cardEl(c, { back: !visible, lg: big })));
           if (visible && p.id === viewer && p.discarded && game.phase !== 'result') cards.appendChild(cardEl(p.discarded, { dim: true, lg: big }));
         } else {
-          p.hand.forEach((c) => cards.appendChild(cardEl(c, { back: !visible, lg: big })));
+          p.hand.forEach((c, i) => cards.appendChild(cardEl(c, { back: !visible, lg: big, anim: i >= prev })));
         }
       }
+      dealt[p.id] = { key: handKey, n: Math.max(prev, p.hand.length) };
       const hn = el('div', 'hand-name', visible && p.inHand && !p.folded && p.hand.length ? handSummary(p) : '');
       const plate = el('div', 'plate');
       const badges = el('div', 'badges');
